@@ -38,6 +38,23 @@ $app->get('/sprints', function (Request $request, Response $response) {
 
     return $response->withHeader('Content-Type', 'application/json');
 });
+$app->post('/sprints', function (Request $request, Response $response) {
+
+    $data = json_decode($request->getBody()->getContents(), true);
+
+    Capsule::table('sprints')->insert([
+        'nombre' => $data['nombre'],
+        'fecha_inicio' => $data['fecha_inicio'],
+        'fecha_fin' => $data['fecha_fin']
+    ]);
+
+    $response->getBody()->write(json_encode([
+        'mensaje' => 'Sprint creado'
+    ]));
+
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
 
 $app->run();
 
