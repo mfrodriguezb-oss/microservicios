@@ -83,6 +83,20 @@ $app->get('/items', function (Request $request, Response $response) {
     return $response->withHeader('Content-Type', 'application/json');
 
 });
+$app->get('/items/{sprint_id}', function (Request $request, Response $response, $args) {
+
+    $sprint_id = $args['sprint_id'];
+
+    $items = Capsule::table('retro_items')
+        ->where('sprint_id', $sprint_id)
+        ->get();
+
+    $response->getBody()->write(json_encode($items));
+
+    return $response->withHeader('Content-Type', 'application/json');
+
+});
+
 
 $app->run();
 
