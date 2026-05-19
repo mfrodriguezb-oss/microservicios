@@ -1,0 +1,43 @@
+<?php
+
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Factory\AppFactory;
+use Illuminate\Database\Capsule\Manager as Capsule;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$capsule = new Capsule;
+
+$capsule->addConnection([
+    'driver' => 'mysql',
+    'host' => '127.0.0.1',
+    'database' => 'registro_retro_db',
+    'username' => 'root',
+    'password' => '',
+    'charset' => 'utf8',
+    'collation' => 'utf8_unicode_ci',
+    'prefix' => '',
+]);
+
+$capsule->setAsGlobal();
+$capsule->bootEloquent();
+
+
+$app = AppFactory::create();
+
+$app->get('/', function (Request $request, Response $response, $args) {
+    $response->getBody()->write("Microservicio de Retrospectivas funcionando 🚀");
+    return $response;
+});
+$app->get('/sprints', function (Request $request, Response $response) {
+
+    $sprints = Capsule::table('sprints')->get();
+
+    $response->getBody()->write(json_encode($sprints));
+
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->run();
+
