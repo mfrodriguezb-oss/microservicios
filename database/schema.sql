@@ -17,8 +17,8 @@ CREATE TABLE retro_items (
     sprint_id INT NOT NULL,
     categoria ENUM('accion', 'logro', 'impedimento', 'comentario', 'otro') NOT NULL,
     descripcion TEXT NOT NULL,
-    cumplida BOOLEAN DEFAULT NULL, -- sólo aplica para acciones; NULL para los demás
-    fecha_revision DATE DEFAULT NULL, -- fecha para revisar cumplimiento o seguimiento
+    cumplida BOOLEAN DEFAULT NULL, 
+    fecha_revision DATE DEFAULT NULL, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
