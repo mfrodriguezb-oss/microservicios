@@ -55,6 +55,34 @@ $app->post('/sprints', function (Request $request, Response $response) {
     return $response->withHeader('Content-Type', 'application/json');
 });
 
+$app->post('/items', function (Request $request, Response $response) {
+
+    $data = json_decode($request->getBody()->getContents(), true);
+
+    Capsule::table('retro_items')->insert([
+        'sprint_id' => $data['sprint_id'],
+        'categoria' => $data['categoria'],
+        'descripcion' => $data['descripcion'],
+        'cumplida' => $data['cumplida'] ?? null,
+        'fecha_revision' => $data['fecha_revision'] ?? null
+    ]);
+
+    $response->getBody()->write(json_encode([
+        'mensaje' => 'Item creado'
+    ]));
+
+    return $response->withHeader('Content-Type', 'application/json');
+
+});
+$app->get('/items', function (Request $request, Response $response) {
+
+    $items = Capsule::table('retro_items')->get();
+
+    $response->getBody()->write(json_encode($items));
+
+    return $response->withHeader('Content-Type', 'application/json');
+
+});
 
 $app->run();
 
