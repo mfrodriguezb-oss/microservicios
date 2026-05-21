@@ -6,6 +6,9 @@ use Slim\Factory\AppFactory;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../app/Models/Sprint.php';
+require __DIR__ . '/../app/Models/RetroItem.php';
+
 
 $capsule = new Capsule;
 
@@ -30,23 +33,21 @@ $app->get('/', function (Request $request, Response $response, $args) {
     $response->getBody()->write("Microservicio de Retrospectivas funcionando 🚀");
     return $response;
 });
+
 $app->get('/sprints', function (Request $request, Response $response) {
 
-    $sprints = Capsule::table('sprints')->get();
+    $sprints = Sprint::obtenerTodos();
 
     $response->getBody()->write(json_encode($sprints));
 
     return $response->withHeader('Content-Type', 'application/json');
 });
+
 $app->post('/sprints', function (Request $request, Response $response) {
 
     $data = json_decode($request->getBody()->getContents(), true);
 
-    Capsule::table('sprints')->insert([
-        'nombre' => $data['nombre'],
-        'fecha_inicio' => $data['fecha_inicio'],
-        'fecha_fin' => $data['fecha_fin']
-    ]);
+    Sprint::crear($data);
 
     $response->getBody()->write(json_encode([
         'mensaje' => 'Sprint creado'
@@ -59,44 +60,32 @@ $app->post('/items', function (Request $request, Response $response) {
 
     $data = json_decode($request->getBody()->getContents(), true);
 
-    Capsule::table('retro_items')->insert([
-        'sprint_id' => $data['sprint_id'],
-        'categoria' => $data['categoria'],
-        'descripcion' => $data['descripcion'],
-        'cumplida' => $data['cumplida'] ?? null,
-        'fecha_revision' => $data['fecha_revision'] ?? null
-    ]);
+    RetroItem::crear($data);
 
     $response->getBody()->write(json_encode([
         'mensaje' => 'Item creado'
     ]));
 
     return $response->withHeader('Content-Type', 'application/json');
-
 });
+
 $app->get('/items', function (Request $request, Response $response) {
 
-    $items = Capsule::table('retro_items')->get();
+    $items = RetroItem::obtenerTodos();
 
     $response->getBody()->write(json_encode($items));
 
     return $response->withHeader('Content-Type', 'application/json');
-
 });
+
 $app->get('/items/{sprint_id}', function (Request $request, Response $response, $args) {
 
-    $sprint_id = $args['sprint_id'];
-
-    $items = Capsule::table('retro_items')
-        ->where('sprint_id', $sprint_id)
-        ->get();
+    $items = RetroItem::obtenerPorSprint($args['sprint_id']);
 
     $response->getBody()->write(json_encode($items));
 
     return $response->withHeader('Content-Type', 'application/json');
-
 });
 
 
 $app->run();
-
